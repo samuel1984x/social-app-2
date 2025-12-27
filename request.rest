@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:3000
+
+### Create post
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+  "message": "First post",
+  "sender": "student1"
+}
+
+### Get all posts
+GET {{baseUrl}}/post
+
+### Get posts by sender
+GET {{baseUrl}}/post?sender=student1
+
+### Get post by id
+GET {{baseUrl}}/post/<postId>
+
+### Update post
+PUT {{baseUrl}}/post/<postId>
+Content-Type: application/json
+
+{
+  "message": "Updated post",
+  "sender": "student1"
+}
