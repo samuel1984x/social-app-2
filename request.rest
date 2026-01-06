@@ -1,45 +1,32 @@
 @baseUrl = http://localhost:3000
 
-### --------------------------------------------------------------
-### 1. CREATE A NEW POST
-### --------------------------------------------------------------
-# @name createPost
+### Create post
 POST {{baseUrl}}/post
 Content-Type: application/json
 
 {
-    "sender": "JohnDoe",
-    "title": "Automated Testing Post",
-    "content": "This post was created to test the API flow."
+  "message": "First post",
+  "sender": "student1"
 }
 
-### --------------------------------------------------------------
-### 2. GET ALL POSTS
-### --------------------------------------------------------------
+### Get all posts
 GET {{baseUrl}}/post
 
-### --------------------------------------------------------------
-### 3. GET THE SPECIFIC POST (Using ID from Step 1)
-### --------------------------------------------------------------
-@postId = {{createPost.response.body._id}}
+### Get posts by sender
+GET {{baseUrl}}/post?sender=student1
 
-GET {{baseUrl}}/post/{{postId}}
+### Get post by id
+GET {{baseUrl}}/post/<postId>
 
-### --------------------------------------------------------------
-### 4. GET POSTS BY SENDER
-### --------------------------------------------------------------
-GET {{baseUrl}}/post?sender=JohnDoe
-
-### --------------------------------------------------------------
-### 5. UPDATE THE POST (Using ID from Step 1)
-### --------------------------------------------------------------
-PUT {{baseUrl}}/post/{{postId}}
+### Update post
+PUT {{baseUrl}}/post/<postId>
 Content-Type: application/json
 
 {
-    "title": "Updated Title",
-    "content": "The content has been updated successfully."
+  "message": "Updated post",
+  "sender": "student1"
 }
+
 
 ### --------------------------------------------------------------
 ### 6. CREATE A COMMENT (Linked to Post from Step 1)
