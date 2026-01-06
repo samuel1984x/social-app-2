@@ -21,7 +21,7 @@ db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
 
 // Routes
-const postRouter = require("./routes/post_routes");
+// const postRouter = require("./routes/post_routes");
 const commentRouter = require("./routes/comment_routes");
 
 app.use("/post", postRouter);
