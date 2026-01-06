@@ -1,0 +1,78 @@
+@baseUrl = http://localhost:3000
+
+### --------------------------------------------------------------
+### 1. CREATE A NEW POST
+### --------------------------------------------------------------
+# @name createPost
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+    "sender": "JohnDoe",
+    "title": "Automated Testing Post",
+    "content": "This post was created to test the API flow."
+}
+
+### --------------------------------------------------------------
+### 2. GET ALL POSTS
+### --------------------------------------------------------------
+GET {{baseUrl}}/post
+
+### --------------------------------------------------------------
+### 3. GET THE SPECIFIC POST (Using ID from Step 1)
+### --------------------------------------------------------------
+@postId = {{createPost.response.body._id}}
+
+GET {{baseUrl}}/post/{{postId}}
+
+### --------------------------------------------------------------
+### 4. GET POSTS BY SENDER
+### --------------------------------------------------------------
+GET {{baseUrl}}/post?sender=JohnDoe
+
+### --------------------------------------------------------------
+### 5. UPDATE THE POST (Using ID from Step 1)
+### --------------------------------------------------------------
+PUT {{baseUrl}}/post/{{postId}}
+Content-Type: application/json
+
+{
+    "title": "Updated Title",
+    "content": "The content has been updated successfully."
+}
+
+### --------------------------------------------------------------
+### 6. CREATE A COMMENT (Linked to Post from Step 1)
+### --------------------------------------------------------------
+# @name createComment
+POST {{baseUrl}}/comments
+Content-Type: application/json
+
+{
+    "postId": "{{postId}}",
+    "sender": "JaneSmith",
+    "content": "This is a comment on the automated post."
+}
+
+### --------------------------------------------------------------
+### 7. GET COMMENTS FOR THIS POST
+### --------------------------------------------------------------
+GET {{baseUrl}}/comments/post/{{postId}}
+
+### --------------------------------------------------------------
+### 8. UPDATE THE COMMENT (Using ID from Step 6)
+### --------------------------------------------------------------
+@commentId = {{createComment.response.body._id}}
+
+PUT {{baseUrl}}/comments/{{commentId}}
+Content-Type: application/json
+
+{
+    "content": "I have updated my comment!"
+}
+
+### --------------------------------------------------------------
+### 9. DELETE THE COMMENT
+### --------------------------------------------------------------
+DELETE {{baseUrl}}/comments/{{commentId}}
+```
