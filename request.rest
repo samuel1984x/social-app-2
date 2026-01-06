@@ -1,6 +1,7 @@
 @baseUrl = http://localhost:3000
 
 ### Create post
+# @name createPost
 POST {{baseUrl}}/post
 Content-Type: application/json
 
@@ -16,6 +17,8 @@ GET {{baseUrl}}/post
 GET {{baseUrl}}/post?sender=student1
 
 ### Get post by id
+@postId = {{createPost.response.body._id}}
+
 GET {{baseUrl}}/post/<postId>
 
 ### Update post
