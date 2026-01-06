@@ -24,7 +24,7 @@ db.once("open", () => console.log("Connected to Database"));
 // const postRouter = require("./routes/post_routes");
 const commentRouter = require("./routes/comment_routes");
 
-app.use("/post", postRouter);
+// app.use("/post", postRouter);
 app.use("/comments", commentRouter);
 
 module.exports = app;
