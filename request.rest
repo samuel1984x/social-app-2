@@ -1,68 +1,147 @@
 @baseUrl = http://localhost:3000
 
-### Create post
+### ============================================================
+### USER MANAGEMENT ENDPOINTS
+### ============================================================
+
+### Create a new user
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "student1",
+  "email": "student1@example.com",
+  "password": "password123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "bio": "Computer Science student",
+  "profileImage": "https://example.com/profile.jpg"
+}
+
+### Create second user for testing
+# @name createUser2
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "student2",
+  "email": "student2@example.com",
+  "password": "password456",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "bio": "CS student interested in web development"
+}
+
+### Get all users
+GET {{baseUrl}}/users
+
+### Get user by ID
+@userId = {{createUser.response.body._id}}
+GET {{baseUrl}}/users/{{userId}}
+
+### Update user profile
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "bio": "Updated bio - Learning TypeScript and MongoDB"
+}
+
+### Delete user
+# DELETE {{baseUrl}}/users/{{userId}}
+
+### ============================================================
+### POST MANAGEMENT ENDPOINTS
+### ============================================================
+
+### Create post by user
 # @name createPost
 POST {{baseUrl}}/post
 Content-Type: application/json
 
 {
-  "message": "First post",
-  "sender": "student1"
+  "message": "Hello everyone! This is my first post.",
+  "userId": "{{userId}}"
+}
+
+### Create post by second user
+# @name createPost2
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+  "message": "TypeScript is amazing!",
+  "userId": "{{createUser2.response.body._id}}"
 }
 
 ### Get all posts
 GET {{baseUrl}}/post
 
-### Get posts by sender
-GET {{baseUrl}}/post?sender=student1
+### Get posts by specific user
+GET {{baseUrl}}/post?userId={{userId}}
 
-### Get post by id
+### Get post by ID
 @postId = {{createPost.response.body._id}}
-
-GET {{baseUrl}}/post/<postId>
+GET {{baseUrl}}/post/{{postId}}
 
 ### Update post
-PUT {{baseUrl}}/post/<postId>
+PUT {{baseUrl}}/post/{{postId}}
 Content-Type: application/json
 
 {
-  "message": "Updated post",
-  "sender": "student1"
+  "message": "Updated first post with more content!",
+  "userId": "{{userId}}"
 }
 
+### Delete post
+# DELETE {{baseUrl}}/post/{{postId}}
 
-### --------------------------------------------------------------
-### 6. CREATE A COMMENT (Linked to Post from Step 1)
-### --------------------------------------------------------------
+### ============================================================
+### COMMENT MANAGEMENT ENDPOINTS
+### ============================================================
+
+### Create comment on post
 # @name createComment
 POST {{baseUrl}}/comments
 Content-Type: application/json
 
 {
-    "postId": "{{postId}}",
-    "sender": "JaneSmith",
-    "content": "This is a comment on the automated post."
+  "postId": "{{postId}}",
+  "userId": "{{createUser2.response.body._id}}",
+  "content": "Great post! I agree with your thoughts on TypeScript."
 }
 
-### --------------------------------------------------------------
-### 7. GET COMMENTS FOR THIS POST
-### --------------------------------------------------------------
+### Create second comment
+# @name createComment2
+POST {{baseUrl}}/comments
+Content-Type: application/json
+
+{
+  "postId": "{{postId}}",
+  "userId": "{{userId}}",
+  "content": "Thanks for sharing!"
+}
+
+### Get all comments
+GET {{baseUrl}}/comments
+
+### Get comments for specific post
 GET {{baseUrl}}/comments/post/{{postId}}
 
-### --------------------------------------------------------------
-### 8. UPDATE THE COMMENT (Using ID from Step 6)
-### --------------------------------------------------------------
+### Get comment by ID
 @commentId = {{createComment.response.body._id}}
+GET {{baseUrl}}/comments/{{commentId}}
 
+### Update comment content
 PUT {{baseUrl}}/comments/{{commentId}}
 Content-Type: application/json
 
 {
-    "content": "I have updated my comment!"
+  "content": "Updated comment: Great post! I really agree with your thoughts on TypeScript and web development."
 }
 
-### --------------------------------------------------------------
-### 9. DELETE THE COMMENT
-### --------------------------------------------------------------
-DELETE {{baseUrl}}/comments/{{commentId}}
-```
+### Delete comment
+# DELETE {{baseUrl}}/comments/{{commentId}}

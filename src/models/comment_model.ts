@@ -8,8 +8,9 @@ const commentSchema = new Schema<IComment>(
       ref: 'Post',
       required: true,
     },
-    sender: {
-      type: String,
+    userId: {
+      type: Schema.Types.ObjectId as any,
+      ref: 'User',
       required: true,
     },
     content: {
