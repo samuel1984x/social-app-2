@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
+import userRouter from './routes/user_routes';
 import postRouter from './routes/post_routes';
 import commentRouter from './routes/comment_routes';
 
@@ -23,6 +24,7 @@ db.on('error', (error: Error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
 
 // Routes
+app.use('/users', userRouter);
 app.use('/post', postRouter);
 app.use('/comments', commentRouter);
 
