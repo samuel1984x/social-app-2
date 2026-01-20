@@ -36,6 +36,22 @@ app.use('/post', postRouter);
 app.use('/comments', commentRouter);
 
 // Health check endpoint
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     tags:
+ *       - Health
+ *     summary: Health check
+ *     description: Check if the server is running and healthy
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthCheck'
+ */
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
