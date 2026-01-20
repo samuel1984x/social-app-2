@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import User from '../models/user_model';
 import RefreshToken from '../models/refresh_token_model';
 
@@ -41,11 +41,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const accessToken = jwt.sign({ userId: user._id, username: user.username }, jwtSecret, {
       expiresIn: tokenExpiry
-    });
+    } as SignOptions);
 
     const refreshTokenString = jwt.sign({ userId: user._id }, refreshSecret, {
       expiresIn: refreshExpiry
-    });
+    } as SignOptions);
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await RefreshToken.create({
@@ -58,6 +58,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { password: pwd, ...userResponse } = userObj;
 
     res.status(201).json({
+      message: 'User registered successfully',
       user: userResponse,
       accessToken,
       refreshToken: refreshTokenString
@@ -90,11 +91,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const accessToken = jwt.sign({ userId: user._id, username: user.username }, jwtSecret, {
       expiresIn: tokenExpiry
-    });
+    } as SignOptions);
 
     const refreshTokenString = jwt.sign({ userId: user._id }, refreshSecret, {
       expiresIn: refreshExpiry
-    });
+    } as SignOptions);
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await RefreshToken.create({
@@ -107,6 +108,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { password: pwd, ...userResponse } = userObj;
 
     res.json({
+      message: 'Login successful',
       user: userResponse,
       accessToken,
       refreshToken: refreshTokenString
@@ -141,9 +143,12 @@ export const refreshTokenEndpoint = async (req: Request, res: Response): Promise
 
     const newAccessToken = jwt.sign({ userId: user._id, username: user.username }, jwtSecret, {
       expiresIn: tokenExpiry
-    });
+    } as SignOptions);
 
-    res.json({ accessToken: newAccessToken });
+    res.json({ 
+      message: 'Token refreshed successfully',
+      accessToken: newAccessToken 
+    });
   } catch (err: any) {
     res.status(401).json({ message: 'invalid refresh token' });
   }
