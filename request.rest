@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:3000
 
 ### ============================================================
-### USER MANAGEMENT ENDPOINTS
+### AUTHENTICATION ENDPOINTS
 ### ============================================================
 
-### Create a new user
-# @name createUser
-POST {{baseUrl}}/users
+### Register a new user
+# @name registerUser
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
@@ -14,14 +14,12 @@ Content-Type: application/json
   "email": "student1@example.com",
   "password": "password123",
   "firstName": "John",
-  "lastName": "Doe",
-  "bio": "Computer Science student",
-  "profileImage": "https://example.com/profile.jpg"
+  "lastName": "Doe"
 }
 
-### Create second user for testing
-# @name createUser2
-POST {{baseUrl}}/users
+### Register second user
+# @name registerUser2
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
@@ -29,20 +27,67 @@ Content-Type: application/json
   "email": "student2@example.com",
   "password": "password456",
   "firstName": "Jane",
-  "lastName": "Smith",
-  "bio": "CS student interested in web development"
+  "lastName": "Smith"
+}
+
+### Login user
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "student1@example.com",
+  "password": "password123"
+}
+
+### Refresh access token
+# @name refreshToken
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{registerUser.response.body.refreshToken}}"
+}
+
+### Logout user (requires access token)
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
+
+{
+  "refreshToken": "{{loginUser.response.body.refreshToken}}"
+}
+
+### ============================================================
+### USER MANAGEMENT ENDPOINTS
+### ============================================================
+
+### Create a new user (alternative to register)
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "student3",
+  "email": "student3@example.com",
+  "password": "password789",
+  "firstName": "Bob",
+  "lastName": "Wilson",
+  "bio": "Computer Science student",
+  "profileImage": "https://example.com/profile.jpg"
 }
 
 ### Get all users
 GET {{baseUrl}}/users
 
 ### Get user by ID
-@userId = {{createUser.response.body._id}}
+@userId = {{registerUser.response.body.user._id}}
 GET {{baseUrl}}/users/{{userId}}
 
-### Update user profile
+### Update user profile (requires authentication)
 PUT {{baseUrl}}/users/{{userId}}
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "firstName": "John",
@@ -50,31 +95,34 @@ Content-Type: application/json
   "bio": "Updated bio - Learning TypeScript and MongoDB"
 }
 
-### Delete user
+### Delete user (requires authentication)
 # DELETE {{baseUrl}}/users/{{userId}}
+# Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 ### ============================================================
 ### POST MANAGEMENT ENDPOINTS
 ### ============================================================
 
-### Create post by user
+### Create post by user (requires authentication)
 # @name createPost
 POST {{baseUrl}}/post
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "message": "Hello everyone! This is my first post.",
   "userId": "{{userId}}"
 }
 
-### Create post by second user
+### Create post by second user (requires authentication)
 # @name createPost2
 POST {{baseUrl}}/post
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "message": "TypeScript is amazing!",
-  "userId": "{{createUser2.response.body._id}}"
+  "userId": "{{registerUser2.response.body.user._id}}"
 }
 
 ### Get all posts
@@ -87,37 +135,41 @@ GET {{baseUrl}}/post?userId={{userId}}
 @postId = {{createPost.response.body._id}}
 GET {{baseUrl}}/post/{{postId}}
 
-### Update post
+### Update post (requires authentication)
 PUT {{baseUrl}}/post/{{postId}}
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "message": "Updated first post with more content!",
   "userId": "{{userId}}"
 }
 
-### Delete post
+### Delete post (requires authentication)
 # DELETE {{baseUrl}}/post/{{postId}}
+# Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 ### ============================================================
 ### COMMENT MANAGEMENT ENDPOINTS
 ### ============================================================
 
-### Create comment on post
+### Create comment on post (requires authentication)
 # @name createComment
 POST {{baseUrl}}/comments
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "postId": "{{postId}}",
-  "userId": "{{createUser2.response.body._id}}",
+  "userId": "{{registerUser2.response.body.user._id}}",
   "content": "Great post! I agree with your thoughts on TypeScript."
 }
 
-### Create second comment
+### Create second comment (requires authentication)
 # @name createComment2
 POST {{baseUrl}}/comments
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "postId": "{{postId}}",
@@ -135,13 +187,22 @@ GET {{baseUrl}}/comments/post/{{postId}}
 @commentId = {{createComment.response.body._id}}
 GET {{baseUrl}}/comments/{{commentId}}
 
-### Update comment content
+### Update comment content (requires authentication)
 PUT {{baseUrl}}/comments/{{commentId}}
 Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.accessToken}}
 
 {
   "content": "Updated comment: Great post! I really agree with your thoughts on TypeScript and web development."
 }
 
-### Delete comment
+### Delete comment (requires authentication)
 # DELETE {{baseUrl}}/comments/{{commentId}}
+# Authorization: Bearer {{loginUser.response.body.accessToken}}
+
+### ============================================================
+### HEALTH CHECK
+### ============================================================
+
+### Check if server is running
+GET {{baseUrl}}/health
