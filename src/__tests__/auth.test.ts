@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../app';
 import User from '../models/user_model';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 describe('Authentication Endpoints', () => {
   beforeAll(async () => {
@@ -198,32 +199,39 @@ describe('Authentication Endpoints', () => {
   });
 
   describe('POST /auth/logout', () => {
-    it('should logout successfully without token', async () => {
-      const registerRes = await request(app)
-        .post('/auth/register')
-        .send({
-          username: 'logoutuser',
-          email: 'logout@example.com',
-          password: 'password123'
-        });
+    let logoutAccessToken: string;
+    let logoutUserId: string;
 
-      const refreshToken = registerRes.body.refreshToken;
+    beforeEach(async () => {
+      const user = await User.create({
+        username: 'logoutuser',
+        email: 'logout@example.com',
+        password: await bcrypt.hash('password123', 10)
+      });
+      logoutUserId = user._id.toString();
+      logoutAccessToken = jwt.sign(
+        { userId: user._id, username: user.username },
+        process.env.JWT_SECRET || 'your_super_secret_jwt_key_change_this_in_production',
+        { expiresIn: '15m' }
+      );
+    });
 
+    it('should logout successfully with valid token', async () => {
       const res = await request(app)
         .post('/auth/logout')
-        .send({ refreshToken });
+        .set('Authorization', `Bearer ${logoutAccessToken}`)
+        .send({});
 
       expect(res.status).toBe(200);
       expect(res.body.message).toBe('logged out');
     });
 
-    it('should logout even with empty body', async () => {
+    it('should fail logout without authentication token', async () => {
       const res = await request(app)
         .post('/auth/logout')
         .send({});
 
-      expect(res.status).toBe(200);
-      expect(res.body.message).toBe('logged out');
+      expect(res.status).toBe(401);
     });
   });
 });
