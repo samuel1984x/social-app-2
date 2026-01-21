@@ -196,6 +196,29 @@ describe('Comment Endpoints', () => {
 
       expect(res.status).toBe(400);
     });
+
+    it('should fail with invalid ID format', async () => {
+      const res = await request(app)
+        .put('/comments/invalid-id')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          content: 'Updated content'
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should fail to update non-existent comment', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const res = await request(app)
+        .put(`/comments/${fakeId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          content: 'Updated content'
+        });
+
+      expect(res.status).toBe(404);
+    });
   });
 
   describe('DELETE /comments/:id', () => {
@@ -220,6 +243,23 @@ describe('Comment Endpoints', () => {
       const res = await request(app).delete(`/comments/${commentId}`);
 
       expect(res.status).toBe(401);
+    });
+
+    it('should fail with invalid ID format', async () => {
+      const res = await request(app)
+        .delete('/comments/invalid-id')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should fail to delete non-existent comment', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const res = await request(app)
+        .delete(`/comments/${fakeId}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.status).toBe(404);
     });
   });
 });

@@ -57,6 +57,30 @@ describe('User Endpoints', () => {
 
       expect(res.status).toBe(400);
     });
+
+    it('should fail if username already exists', async () => {
+      const res = await request(app)
+        .post('/users')
+        .send({
+          username: 'testuser',
+          email: 'another@example.com',
+          password: 'password123'
+        });
+
+      expect(res.status).toBe(409);
+    });
+
+    it('should fail if email already exists', async () => {
+      const res = await request(app)
+        .post('/users')
+        .send({
+          username: 'newuser2',
+          email: 'test@example.com',
+          password: 'password123'
+        });
+
+      expect(res.status).toBe(409);
+    });
   });
 
   describe('GET /users', () => {
@@ -138,6 +162,23 @@ describe('User Endpoints', () => {
         });
 
       expect(res.status).toBe(400);
+    });
+
+    it('should fail to update with duplicate email', async () => {
+      const anotherUser = await User.create({
+        username: 'anotheruser',
+        email: 'another@example.com',
+        password: 'password123'
+      });
+
+      const res = await request(app)
+        .put(`/users/${userId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          email: 'another@example.com'
+        });
+
+      expect(res.status).toBe(409);
     });
   });
 

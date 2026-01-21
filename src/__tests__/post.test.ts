@@ -163,6 +163,31 @@ describe('Post Endpoints', () => {
 
       expect(res.status).toBe(400);
     });
+
+    it('should fail with invalid ID format', async () => {
+      const res = await request(app)
+        .put('/post/invalid-id')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          message: 'Updated content',
+          userId
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should fail to update non-existent post', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const res = await request(app)
+        .put(`/post/${fakeId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          message: 'Updated content',
+          userId
+        });
+
+      expect(res.status).toBe(404);
+    });
   });
 
   describe('DELETE /post/:id', () => {
@@ -186,6 +211,23 @@ describe('Post Endpoints', () => {
       const res = await request(app).delete(`/post/${postId}`);
 
       expect(res.status).toBe(401);
+    });
+
+    it('should fail with invalid ID format', async () => {
+      const res = await request(app)
+        .delete('/post/invalid-id')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should fail to delete non-existent post', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const res = await request(app)
+        .delete(`/post/${fakeId}`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.status).toBe(404);
     });
   });
 });

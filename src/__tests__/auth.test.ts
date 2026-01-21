@@ -196,4 +196,34 @@ describe('Authentication Endpoints', () => {
       expect(res.body.message).toBe('invalid refresh token');
     });
   });
+
+  describe('POST /auth/logout', () => {
+    it('should logout successfully without token', async () => {
+      const registerRes = await request(app)
+        .post('/auth/register')
+        .send({
+          username: 'logoutuser',
+          email: 'logout@example.com',
+          password: 'password123'
+        });
+
+      const refreshToken = registerRes.body.refreshToken;
+
+      const res = await request(app)
+        .post('/auth/logout')
+        .send({ refreshToken });
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('logged out');
+    });
+
+    it('should logout even with empty body', async () => {
+      const res = await request(app)
+        .post('/auth/logout')
+        .send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('logged out');
+    });
+  });
 });
